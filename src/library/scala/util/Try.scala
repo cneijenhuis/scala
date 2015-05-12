@@ -17,7 +17,7 @@ import scala.language.implicitConversions
  * The `Try` type represents a computation that may either result in an exception, or return a
  * successfully computed value. It's similar to, but semantically different from the [[scala.util.Either]] type.
  *
- * Instances of `Try[T]`, are either an instance of [[scala.util.Success]][T] or [[scala.util.Failure]][T].
+ * Instances of `Try[T]`, are either an instance of [[scala.util.Success]][T] or [[scala.util.Failure]].
  *
  * For example, `Try` can be used to perform division on a user-defined input, without the need to do explicit
  * exception-handling in all of the places that an exception might occur.
@@ -194,22 +194,22 @@ object Try {
 
 }
 
-final case class Failure[+T](exception: Throwable) extends Try[T] {
+final case class Failure(exception: Throwable) extends Try[Nothing] {
   def isFailure: Boolean = true
   def isSuccess: Boolean = false
-  def recoverWith[U >: T](f: PartialFunction[Throwable, Try[U]]): Try[U] =
+  def recoverWith[U >: Nothing](f: PartialFunction[Throwable, Try[U]]): Try[U] =
     try {
       if (f isDefinedAt exception) f(exception) else this
     } catch {
       case NonFatal(e) => Failure(e)
     }
-  def get: T = throw exception
-  def flatMap[U](f: T => Try[U]): Try[U] = this.asInstanceOf[Try[U]]
-  def flatten[U](implicit ev: T <:< Try[U]): Try[U] = this.asInstanceOf[Try[U]]
-  def foreach[U](f: T => U): Unit = ()
-  def map[U](f: T => U): Try[U] = this.asInstanceOf[Try[U]]
-  def filter(p: T => Boolean): Try[T] = this
-  def recover[U >: T](rescueException: PartialFunction[Throwable, U]): Try[U] =
+  def get: Nothing = throw exception
+  def flatMap[U](f: Nothing => Try[U]): Failure = this
+  def flatten[U](implicit ev: Nothing <:< Try[U]): Failure = this
+  def foreach[U](f: Nothing => U): Unit = ()
+  def map[U](f: Nothing => U): Failure = this
+  def filter(p: Nothing => Boolean): Failure = this
+  def recover[U >: Nothing](rescueException: PartialFunction[Throwable, U]): Try[U] =
     try {
       if (rescueException isDefinedAt exception) {
         Try(rescueException(exception))

@@ -73,7 +73,7 @@ class JavapClass(
   private def targeted(path: String, app: Boolean): (String, Try[Array[Byte]]) =
     bytesFor(path, app) match {
       case Success((target, bytes)) => (target, Try(bytes))
-      case f: Failure[_]            => (path,   Failure(f.exception))
+      case f: Failure               => (path,   f)
     }
 
   /** Find bytes. Handle "-", "-app", "Foo#bar" (by ignoring member), "#bar" (by taking "bar").

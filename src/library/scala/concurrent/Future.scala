@@ -247,7 +247,7 @@ trait Future[+T] extends Awaitable[T] {
     import impl.Promise.DefaultPromise
     val p = new DefaultPromise[S]()
     onComplete {
-      case f: Failure[_] => p complete f.asInstanceOf[Failure[S]]
+      case f: Failure => p complete f
       case Success(v) => try f(v) match {
         // If possible, link DefaultPromises to avoid space leaks
         case dp: DefaultPromise[_] => dp.asInstanceOf[DefaultPromise[S]].linkRootOf(p)
@@ -359,7 +359,7 @@ trait Future[+T] extends Awaitable[T] {
     implicit val ec = internalExecutor
     val p = Promise[(T, U)]()
     onComplete {
-      case f: Failure[_] => p complete f.asInstanceOf[Failure[(T, U)]]
+      case f: Failure => p complete f
       case Success(s) => that onComplete { c => p.complete(c map { s2 => (s, s2) }) }
     }
     p.future
